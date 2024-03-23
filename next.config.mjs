@@ -3,11 +3,15 @@ import withPWAInit from "@ducanh2912/next-pwa";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["pokeapi.co"],
+    domains: ["pokeapi.co", "raw.githubusercontent.com"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "https://pokeapi.co",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
       },
     ],
   },

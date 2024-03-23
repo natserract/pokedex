@@ -8,7 +8,7 @@ export function Layout({ children }: PropsWithChildren) {
       <section className="relative mx-auto flex w-full max-w-screen-lg  flex-col">
         <Header />
 
-        <div className="flex flex-row">{children}</div>
+        <div className="p-4">{children}</div>
       </section>
     </main>
   );

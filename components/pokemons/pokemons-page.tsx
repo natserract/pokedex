@@ -36,23 +36,26 @@ export async function Pokemons({ offset, limit, query, sort }: Props) {
         })}
       </div>
 
-      <div className="flex flex-row items-center justify-center gap-5 py-10">
-        {hasNextPage && (
-          <PaginationButton
-            type="next"
-            offset={nextPageState?.offset || 0}
-            limit={nextPageState?.limit || 20}
-          />
-        )}
+      {/* Hide pagination on searching */}
+      {!query && (
+        <div className="flex flex-row items-center justify-center gap-5 py-10">
+          {hasNextPage && (
+            <PaginationButton
+              type="next"
+              offset={nextPageState?.offset || 0}
+              limit={nextPageState?.limit || 20}
+            />
+          )}
 
-        {hasPrevPage && (
-          <PaginationButton
-            type="prev"
-            offset={previousPageState?.offset || 0}
-            limit={previousPageState?.limit || 20}
-          />
-        )}
-      </div>
+          {hasPrevPage && (
+            <PaginationButton
+              type="prev"
+              offset={previousPageState?.offset || 0}
+              limit={previousPageState?.limit || 20}
+            />
+          )}
+        </div>
+      )}
     </section>
   );
 }

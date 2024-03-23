@@ -1,8 +1,8 @@
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { Loading } from "~/components/base/loading";
 import { Pokemons } from "~/components/pokemons/pokemons-page";
+import { FormSearch } from "~/components/search/form-search";
 
 export default function Page({
   searchParams,
@@ -11,24 +11,9 @@ export default function Page({
 }) {
   const isSearch = !!searchParams.query;
 
-  async function create(formData: FormData) {
-    "use server";
-
-    const rawFormData = {
-      query: formData.get("query"),
-    };
-
-    redirect(
-      `/search?query=${encodeURIComponent(rawFormData.query as string)}`,
-    );
-  }
-
   return (
-    <section>
-      <form action={create}>
-        <input type="search" className="text-black" name="query" />
-        <button type="submit">Cari</button>
-      </form>
+    <section className="">
+      <FormSearch />
 
       {isSearch && (
         <Suspense fallback={<Loading />}>

@@ -7,7 +7,11 @@ import { Pokemons } from "~/components/pokemons/pokemons-page";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { offset: string; limit: string };
+  searchParams: {
+    offset: string;
+    limit: string;
+    sortBy?: "name_desc" | "name_asc";
+  };
 }) {
   const offset = searchParams?.offset ? parseInt(searchParams.offset, 10) : 0;
   const limit = searchParams?.limit ? parseInt(searchParams.limit, 10) : 20;

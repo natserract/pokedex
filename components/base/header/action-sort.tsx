@@ -23,10 +23,6 @@ export function SortAction() {
         <Dropdown.Item className="flex cursor-pointer items-center gap-2">
           Urut nama
         </Dropdown.Item>
-
-        <Dropdown.Item className="flex cursor-pointer items-center gap-2">
-          Urut tanggal ditambahkan
-        </Dropdown.Item>
       </Dropdown.Content>
     </Dropdown.Root>
   );

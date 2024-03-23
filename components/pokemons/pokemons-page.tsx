@@ -1,14 +1,19 @@
 import { PokemonsCard } from "~/components/pokemons/pokemons-card";
 import { PaginationButton } from "~/components/pokemons/pagination/pagination-button";
-import { listPokemons } from "~/components/pokemons/pokemons-utils";
+import {
+  listPokemons,
+  type ListPokemonsParams,
+} from "~/components/pokemons/pokemons-utils";
 
-type Props = {
-  offset: number;
-  limit: number;
-};
+type Props = ListPokemonsParams;
 
-export async function Pokemons({ offset, limit }: Props) {
-  const pokemons = await listPokemons(offset, limit);
+export async function Pokemons({ offset, limit, query, sort }: Props) {
+  const pokemons = await listPokemons({
+    offset,
+    limit,
+    query,
+    sort,
+  });
 
   const hasNextPage = !!pokemons.next;
   const hasPrevPage = !!pokemons.previous;

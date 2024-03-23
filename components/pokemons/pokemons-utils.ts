@@ -9,7 +9,7 @@ export interface PokemonData {
   types: PokemonType[];
 }
 
-export function listPokemonsMapper(
+export function pokemonsMapper(
   items: PokemonData[],
   data: NamedAPIResourceList,
 ) {
@@ -35,8 +35,33 @@ export function pokemonDataMapper(data: Pokemon) {
   };
 }
 
-export async function listPokemons(offset: number, limit: number) {
-  const pokemons = await pokemonInstance.listPokemonForms(offset, limit);
+interface BaseParams {
+  offset: number;
+  limit: number;
+}
+
+export interface ListPokemonsParams extends BaseParams {
+  query?: FilterParams;
+  sort?: SortParams;
+}
+
+export async function listPokemons(params: ListPokemonsParams) {
+  let pokemons = await pokemonInstance.listPokemons(
+    params.offset,
+    params.limit,
+  );
+
+  if (params.query) {
+    pokemons = await filterPokemons(pokemons, {
+      name: encodeURIComponent(params.query.name as string),
+    });
+  }
+
+  if (params.sort) {
+    pokemons = await sortPokemonsByName(pokemons, {
+      name: params.sort.name,
+    });
+  }
 
   const pokemonDataList = await Promise.all<PokemonData>(
     pokemons.results.map(async (pokemon) => {
@@ -45,46 +70,47 @@ export async function listPokemons(offset: number, limit: number) {
     }),
   );
 
-  return listPokemonsMapper(pokemonDataList, pokemons);
+  return pokemonsMapper(pokemonDataList, pokemons);
 }
 
 interface FilterParams {
   name: string;
 }
 
-export async function filterPokemons(params: FilterParams) {
-  const pokemons = await pokemonInstance.listPokemonForms();
+export async function filterPokemons(
+  pokemons: NamedAPIResourceList,
+  params: FilterParams,
+): Promise<NamedAPIResourceList> {
   const filteredPokemons = pokemons.results.filter((pokemon) =>
     pokemon.name.toLowerCase().includes(params.name.toLowerCase()),
   );
 
-  // Fetch the individual Pokémon data for the filtered list
-  const pokemonDataList = await Promise.all(
-    filteredPokemons.map(async (pokemon) => {
-      const pokemonData = await pokemonInstance.getPokemonByName(pokemon.name);
-      return pokemonDataMapper(pokemonData);
-    }),
-  );
-
-  return listPokemonsMapper(pokemonDataList, pokemons);
+  return {
+    ...pokemons,
+    results: filteredPokemons,
+  };
 }
+
+type SortType = "asc" | "desc";
 
 interface SortParams {
-  offset: number;
-  limit: number;
+  name: SortType;
 }
 
-interface SortByNameParams extends SortParams {
-  name: string;
-}
+interface SortByNameParams extends SortParams {}
 
-export async function sortPokemonsByName(params: SortByNameParams) {
-  const pokemons = await listPokemons(params.offset, params.limit);
-
-  // Sort the Pokémon list by name
+export async function sortPokemonsByName(
+  pokemons: NamedAPIResourceList,
+  params: SortByNameParams,
+): Promise<NamedAPIResourceList> {
   const sortedPokemons = pokemons.results.sort((a, b) =>
-    a.name.localeCompare(b.name),
+    params.name == "asc"
+      ? a.name.localeCompare(b.name)
+      : b.name.localeCompare(a.name),
   );
 
-  return sortedPokemons;
+  return {
+    ...pokemons,
+    results: sortedPokemons,
+  };
 }

@@ -31,9 +31,11 @@ export function PaginationButton({ offset, limit, type }: Props) {
     let link = `/?${newUpdatedSearchParams?.toString()}`;
 
     if (type === "prev" && offset < limit) {
+      // Keep 'sortByName' param
       if (newUpdatedSearchParams.has(SearchParamsKeys.SORT_BY_NAME)) {
         link = `/?sortByName${newUpdatedSearchParams.get(SearchParamsKeys.SORT_BY_NAME)}`;
       } else {
+        // If when advancing at the first offset and performing previous actions
         link = "/";
       }
     }

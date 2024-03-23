@@ -1,7 +1,22 @@
-export default function Home() {
+import { Suspense } from "react";
+
+import { Layout } from "~/components/base/layout";
+import { Loading } from "~/components/base/loading";
+import { Pokemons } from "~/components/pages/home";
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: { name?: string; page?: string };
+}) {
+  const { name } = searchParams;
+  const page = searchParams.page ? parseInt(searchParams.page) : 1;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 data-testid="title">Get Started</h1>
-    </main>
+    <Layout>
+      <Suspense fallback={<Loading />}>
+        <Pokemons />
+      </Suspense>
+    </Layout>
   );
 }

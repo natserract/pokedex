@@ -1,4 +1,5 @@
 import { NamedAPIResourceList, Pokemon, PokemonType } from "pokenode-ts";
+
 import { pokemonInstance } from "~/apis/client";
 import { parseOffsetLimitFromUrl } from "~/components/pokemons/pagination/pagination-utils";
 
@@ -58,9 +59,11 @@ export async function listPokemons(params: ListPokemonsParams) {
   }
 
   if (params.sort) {
-    pokemons = await sortPokemonsByName(pokemons, {
-      name: params.sort.name,
-    });
+    if (params.sort.name) {
+      pokemons = await sortPokemonsByName(pokemons, {
+        name: params.sort.name,
+      });
+    }
   }
 
   const pokemonDataList = await Promise.all<PokemonData>(
@@ -91,10 +94,10 @@ export async function filterPokemons(
   };
 }
 
-type SortType = "asc" | "desc";
+export type SortType = "asc" | "desc";
 
 interface SortParams {
-  name: SortType;
+  name: SortType | undefined;
 }
 
 interface SortByNameParams extends SortParams {}

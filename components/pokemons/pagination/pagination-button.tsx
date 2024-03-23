@@ -1,8 +1,10 @@
 "use client";
-import { useRouter } from "next/navigation";
 import NProgress from "nprogress";
+import { useRouter } from "next/navigation";
 
 import Button from "~/components/base/button";
+import useSearchParamsPersistence from "~/hooks/useSearchParamsPersistence";
+import { SearchParamsKeys } from "~/constants/searchParamsKeys";
 
 type Props = {
   type: "prev" | "next";
@@ -12,16 +14,32 @@ type Props = {
 
 export function PaginationButton({ offset, limit, type }: Props) {
   const router = useRouter();
+  const { getWithUpdateSearchParams } = useSearchParamsPersistence();
 
   const handleClick = () => {
-    let params = `/?offset=${offset}&limit=${limit}`;
+    const newUpdatedSearchParams = getWithUpdateSearchParams([
+      {
+        key: SearchParamsKeys.OFFSET,
+        value: String(offset),
+      },
+      {
+        key: SearchParamsKeys.LIMIT,
+        value: String(limit),
+      },
+    ]);
+
+    let link = `/?${newUpdatedSearchParams?.toString()}`;
 
     if (type === "prev" && offset < limit) {
-      params = "/";
+      if (newUpdatedSearchParams.has(SearchParamsKeys.SORT_BY_NAME)) {
+        link = `/?sortByName${newUpdatedSearchParams.get(SearchParamsKeys.SORT_BY_NAME)}`;
+      } else {
+        link = "/";
+      }
     }
 
     NProgress.inc();
-    router.push(params);
+    router.push(link);
   };
 
   return (

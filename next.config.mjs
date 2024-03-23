@@ -1,7 +1,17 @@
 import withPWAInit from "@ducanh2912/next-pwa";
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    domains: ["pokeapi.co"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "https://pokeapi.co",
+      },
+    ],
+  },
+};
 
 const withPWA = withPWAInit({
   dest: "public",

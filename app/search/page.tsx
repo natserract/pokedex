@@ -1,3 +1,7 @@
-export default function Page() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { name?: string; page?: string };
+}) {
   return <div>Search Page</div>;
 }

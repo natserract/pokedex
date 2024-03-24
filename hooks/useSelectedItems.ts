@@ -28,10 +28,25 @@ export default function useSelectedItems<T extends object>() {
     });
   }, []);
 
+  const removeSelectedItem = useCallback((key: string | number) => {
+    setSelectedItems((items) => {
+      const updatedItems = new Map(items);
+      updatedItems.delete(key);
+
+      return updatedItems;
+    });
+  }, []);
+
+  const clear = useCallback(() => {
+    setSelectedItems(new Map());
+  }, []);
+
   return {
     isSelected,
+    removeSelectedItem,
     updateSelectedItem,
     selectedItems: [...selectedItems.values()],
     selectedItemsLen,
+    clear,
   };
 }

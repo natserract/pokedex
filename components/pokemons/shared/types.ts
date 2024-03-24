@@ -5,16 +5,14 @@ export interface BaseParams {
   limit: number;
 }
 
-export interface PokemonDataList {
+export interface PokemonDataList extends Pick<Pokemon, "height" | "weight"> {
   id: number;
   name: string;
   types: PokemonType[];
   thumbnailUrl?: string | null;
 }
 
-export interface PokemonDataGet
-  extends PokemonDataList,
-    Pick<Pokemon, "height" | "weight"> {
+export interface PokemonDataGet extends PokemonDataList {
   abilityName: string;
   coverUrl: string | null;
   description: string;

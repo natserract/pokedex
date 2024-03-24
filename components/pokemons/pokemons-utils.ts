@@ -30,6 +30,8 @@ export function pokemonDataMapper(data: Pokemon): PokemonDataList {
   return {
     id: data.id,
     name: data.name,
+    height: data.height,
+    weight: data.weight,
     thumbnailUrl: data.sprites.front_default,
     types: data.types,
   };

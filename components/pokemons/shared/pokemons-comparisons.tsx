@@ -1,5 +1,11 @@
 "use client";
-import React, { useCallback, useState, useEffect } from "react";
+import React, {
+  useCallback,
+  useState,
+  useMemo,
+  useTransition,
+  useEffect,
+} from "react";
 import Image from "next/image";
 
 import Button from "~/components/base/button";
@@ -9,13 +15,15 @@ import type {
   PokemonDataGet,
   PokemonDataList,
 } from "~/components/pokemons/shared/types";
+import { PokemonsTypes } from "~/components/pokemons/shared/pokemons-types";
 import { listPokemons as listPokemonsCall } from "~/components/pokemons/pokemons-utils";
 import { PokemonsTitle } from "~/components/pokemons/shared/pokemons-card/pokemons-card";
-import { PokemonsCardSelectable } from "~/components/pokemons/shared/pokemons-card/pokemons-card-selectable";
 import { PaginationButton } from "~/components/pokemons/shared/pagination/pagination-button";
+import { PokemonsCardSelectable } from "~/components/pokemons/shared/pokemons-card/pokemons-card-selectable";
 
 import useSelectedItems from "~/hooks/useSelectedItems";
 
+// @todo: fix list pokemons mapper types
 type Pokemons = any;
 
 type Pagination = {
@@ -33,17 +41,15 @@ type Props = {
 };
 
 export function PokemonComparisons({ data }: Props) {
-  const [pokemons, setPokemons] = useState<Pokemons[]>([]);
-  const [isLoading, setLoading] = useState(false);
+  const [pokemons, setPokemons] = useState<Pokemons>({});
 
   const [event, setEvent] = useState<Events | undefined>();
-
   const [pagination, setPagination] = useState<Pagination>({
     offset: 0,
     limit: 20,
   });
-  const [hasNext, setNext] = useState(false);
-  const [hasPrev, setPrev] = useState(false);
+
+  const [isPending, startTransition] = useTransition();
 
   const {
     selectedItems,
@@ -53,25 +59,28 @@ export function PokemonComparisons({ data }: Props) {
     clear,
   } = useSelectedItems<PokemonDataList>();
 
-  const fetchPokemons = useCallback(async () => {
-    setLoading(true);
+  const hasNext = useMemo(() => !!pokemons.next, [pokemons.next]);
+  const hasPrev = useMemo(() => !!pokemons.previous, [pokemons.previous]);
 
-    const responses = await listPokemonsCall({
-      offset: pagination.offset,
-      limit: pagination.limit,
-    });
+  const fetchPokemons = useCallback(
+    async (offset: number, limit: number) => {
+      const responses = await listPokemonsCall({
+        offset,
+        limit,
+      });
 
-    // The behaviour's, the initial value of selected items is current pokemon `data`
-    // So, the current data within same name/id will excluded
-    const filteredPokemons = responses.results.filter(
-      (val) => val.name !== data.name,
-    );
-    setPokemons(filteredPokemons);
-
-    setNext(!!responses.next);
-    setPrev(!!responses.previous);
-    setLoading(false);
-  }, [pagination, data.name]);
+      // The behaviour's, the initial value of selected items is current pokemon `data`
+      // So, the current data within same name/id will excluded
+      const filteredPokemons = responses.results.filter(
+        (val) => val.name !== data.name,
+      );
+      setPokemons({
+        ...responses,
+        results: filteredPokemons,
+      });
+    },
+    [data.name],
+  );
 
   const handleToggleDialog = (open: boolean) => {
     if (open) {
@@ -82,19 +91,39 @@ export function PokemonComparisons({ data }: Props) {
     }
   };
 
+  const handleNextPagination = () => {
+    setPagination((state) => ({
+      ...state,
+      offset: state.offset + state.limit,
+    }));
+  };
+
+  const handlePrevPagination = () => {
+    setPagination((state) => ({
+      ...state,
+      offset: state.offset - state.limit,
+    }));
+  };
+
   const handleToSelectItems = () => {
     setEvent(Events.SELECT_ITEMS);
+
+    // Initial fetch
+    startTransition(async () => {
+      await fetchPokemons(pagination.offset, pagination.limit);
+    });
   };
 
   const handleToProceed = () => {
     setEvent(Events.PROCEED);
   };
 
+  // Fetch if pagination state changed
   useEffect(() => {
-    if (event === Events.SELECT_ITEMS) {
-      fetchPokemons();
-    }
-  }, [event, fetchPokemons]);
+    startTransition(async () => {
+      await fetchPokemons(pagination.offset, pagination.limit);
+    });
+  }, [pagination, fetchPokemons]);
 
   return (
     <Dialog.Root open={!!event} onOpenChange={handleToggleDialog}>
@@ -108,27 +137,30 @@ export function PokemonComparisons({ data }: Props) {
 
       <Dialog.Portal>
         <Dialog.Content className="h-full overflow-y-auto">
-          <Dialog.Title>{renderTitleByEvent(event)}</Dialog.Title>
+          <Dialog.Title>
+            {renderTitleByEvent(event)}
+            <span className="text-foreground/30 block pt-2 text-sm font-normal">
+              (Max: 3 items)
+            </span>
+          </Dialog.Title>
 
-          {isLoading && <Loading />}
-          {!isLoading && event === Events.SELECT_ITEMS && (
-            <SelectItemsDialogContent
+          {isPending && <Loading />}
+          {!isPending && event === Events.SELECT_ITEMS && (
+            <SelectItemsContent
               hasNext={hasNext}
               hasPrev={hasPrev}
               pokemons={pokemons}
               isSelected={isSelected}
               pagination={pagination}
               onProceed={handleToProceed}
-              setPagination={setPagination}
+              onNext={handleNextPagination}
+              onPrev={handlePrevPagination}
               selectedItemsLen={selectedItemsLen}
               onUpdateSelectedItem={updateSelectedItem}
             />
           )}
-          {!isLoading && event === Events.PROCEED && (
-            <ComparisonItemsDialogContent
-              initial={data}
-              items={selectedItems}
-            />
+          {!isPending && event === Events.PROCEED && (
+            <ComparisonItemsContent initial={data} items={selectedItems} />
           )}
         </Dialog.Content>
       </Dialog.Portal>
@@ -147,53 +179,39 @@ const renderTitleByEvent = (event: Events | undefined) => {
   }
 };
 
-type SelectItemsDialogContentProps = {
-  pokemons: Pokemons[];
+type SelectItemsContentProps = {
+  pokemons: Pokemons;
   hasNext: boolean;
   hasPrev: boolean;
   pagination: Pagination;
-  setPagination: React.Dispatch<React.SetStateAction<Pagination>>;
   selectedItemsLen: number;
   isSelected: (value: string) => boolean;
   onUpdateSelectedItem: (data: PokemonDataList, key: string) => void;
+  onNext: () => void;
+  onPrev: () => void;
   onProceed: () => void;
 };
 
-function SelectItemsDialogContent({
+function SelectItemsContent({
   pokemons,
   hasNext,
   hasPrev,
   pagination,
-  setPagination,
+  onNext,
+  onPrev,
   selectedItemsLen,
   isSelected,
   onUpdateSelectedItem,
   onProceed,
-}: SelectItemsDialogContentProps) {
+}: SelectItemsContentProps) {
   const handleSelect = (data: PokemonDataList) => {
     onUpdateSelectedItem(data, data.name);
-  };
-
-  const handleNextPagination = () => {
-    setPagination((state) => ({
-      ...state,
-      offset: state.offset + state.limit,
-    }));
-  };
-
-  const handlePrevPagination = () => {
-    if (pagination.offset < pagination.limit) return;
-
-    setPagination((state) => ({
-      ...state,
-      offset: state.offset - state.limit,
-    }));
   };
 
   return (
     <div>
       <div className="grid grid-cols-1 pb-20 pt-10 sm:grid-cols-3 md:grid-cols-5">
-        {pokemons.map((pokemon) => {
+        {pokemons.results.map((pokemon: any) => {
           return (
             <PokemonsCardSelectable
               key={pokemon.id}
@@ -216,7 +234,7 @@ function SelectItemsDialogContent({
               type="next"
               offset={pagination.offset}
               limit={pagination.limit}
-              onClick={handleNextPagination}
+              onClick={onNext}
             />
           )}
 
@@ -225,7 +243,7 @@ function SelectItemsDialogContent({
               type="prev"
               offset={pagination.offset}
               limit={pagination.limit}
-              onClick={handlePrevPagination}
+              onClick={onPrev}
             />
           )}
         </div>
@@ -245,15 +263,15 @@ function SelectItemsDialogContent({
   );
 }
 
-type ComparisonItemsDialogContentProps = {
-  initial: PokemonDataGet;
+type ComparisonItemsContentProps = {
   items: PokemonDataList[];
+  initial: PokemonDataList;
 };
 
-function ComparisonItemsDialogContent({
+export function ComparisonItemsContent({
   items,
   initial,
-}: ComparisonItemsDialogContentProps) {
+}: ComparisonItemsContentProps) {
   return (
     <div className="flex h-screen w-full flex-row gap-10 overflow-x-auto py-10">
       {[initial, ...items].map((value) => {
@@ -268,24 +286,38 @@ function ComparisonItemsDialogContent({
             />
 
             <div className="border-slate-muted mb-5 border-b pb-2">
-              <p className="text-foreground/60 mb-1 text-xs">Name:</p>
+              <span className="text-foreground/60 mb-1 block text-xs">
+                Name:
+              </span>
               <PokemonsTitle name={value.name} />
             </div>
 
-            <div className="border-slate-muted mb-5 border-b  pb-2">
-              <p className="text-foreground/60 mb-1 text-xs">Height:</p>
+            <div className="border-slate-muted mb-5 border-b pb-2">
+              <span className="text-foreground/60 mb-1 block text-xs">
+                Height:
+              </span>
+              <p className="font-bold">{value.height}</p>
+            </div>
+
+            <div className="border-slate-muted mb-5 border-b pb-2">
+              <span className="text-foreground/60 mb-1 block text-xs">
+                Weight:
+              </span>
+              <p className="font-bold">{value.weight}</p>
             </div>
 
             <div className="border-slate-muted mb-5 border-b  pb-2">
-              <p className="text-foreground/60 mb-1 text-xs">Weight:</p>
+              <span className="text-foreground/60 mb-1 block text-xs">
+                Abilities:
+              </span>
+              <p className="font-bold">{value.weight}</p>
             </div>
 
-            <div className="border-slate-muted mb-5 border-b  pb-2">
-              <p className="text-foreground/60 mb-1 text-xs">Abilities:</p>
-            </div>
-
-            <div className="border-slate-muted mb-5 border-b  pb-2">
-              <p className="text-foreground/60 mb-1 text-xs">Types:</p>
+            <div className="border-slate-muted mb-5 border-b pb-2">
+              <span className="text-foreground/60 mb-1 block text-xs">
+                Types:
+              </span>
+              <PokemonsTypes types={value.types} />
             </div>
           </div>
         );

@@ -26,12 +26,11 @@ export async function Pokemons({ offset, limit, query, sort }: Props) {
         {pokemons.results.map((pokemon) => {
           return (
             <PokemonsCard
-              {...pokemon}
-              id={pokemon.id}
               key={pokemon.id}
-              name={pokemon.name}
-              thumbnailUrl={pokemon.thumbnailUrl || ""}
-              types={pokemon.types}
+              data={{
+                ...pokemon,
+                thumbnailUrl: pokemon.thumbnailUrl || "",
+              }}
             />
           );
         })}

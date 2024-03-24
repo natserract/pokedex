@@ -8,6 +8,7 @@ import {
 import type { PokemonDataGet } from "~/components/pokemons/shared/types";
 import { PokemonsTypes } from "~/components/pokemons/shared/pokemons-types";
 import { PokemonsAbility } from "~/components/pokemons/shared/pokemons-ability";
+import { PokemonComparisons } from "~/components/pokemons/shared/pokemons-comparisons";
 
 import { toCamelCase } from "~/utils/string";
 
@@ -46,6 +47,7 @@ function PokemonsDetailSection({ data }: PokemonsDetailSectionProps) {
 
           <p className="my-5">{description}</p>
           <PokemonsAbility data={data} />
+          <PokemonComparisons data={data} />
         </aside>
       </div>
 

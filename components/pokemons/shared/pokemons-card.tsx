@@ -4,9 +4,12 @@ import Link from "next/link";
 import { PokemonsTypes } from "~/components/pokemons/shared/pokemons-types";
 import type { PokemonDataList } from "~/components/pokemons/shared/types";
 
-type PokemonsCardProps = PokemonDataList;
+type PokemonsCardProps = {
+  data: PokemonDataList;
+};
 
-export function PokemonsCard({ name, types, thumbnailUrl }: PokemonsCardProps) {
+export function PokemonsCard({ data }: PokemonsCardProps) {
+  const { name, types, thumbnailUrl } = data;
   const pokemonLink = `/pokemons/${name.toLowerCase()}`;
 
   return (

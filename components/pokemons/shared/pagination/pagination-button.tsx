@@ -10,13 +10,20 @@ type Props = {
   type: "prev" | "next";
   offset: number;
   limit: number;
+  onClick?: () => void;
 };
 
-export function PaginationButton({ offset, limit, type }: Props) {
+export function PaginationButton({ offset, limit, type, onClick }: Props) {
   const router = useRouter();
   const { getWithUpdateSearchParams } = useSearchParamsPersistence();
 
   const handleClick = () => {
+    if (onClick) {
+      onClick(); // handle offset, limit, page manually
+      return;
+    }
+
+    // offset, limit take from search params
     const newUpdatedSearchParams = getWithUpdateSearchParams([
       {
         key: SearchParamsKeys.OFFSET,

@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback, useState, useEffect } from "react";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import Image from "next/image";
 
 import Button from "~/components/base/button";
 import { Loading } from "~/components/base/loading";
@@ -10,8 +10,10 @@ import type {
   PokemonDataList,
 } from "~/components/pokemons/shared/types";
 import { listPokemons as listPokemonsCall } from "~/components/pokemons/pokemons-utils";
+import { PokemonsTitle } from "~/components/pokemons/shared/pokemons-card/pokemons-card";
 import { PokemonsCardSelectable } from "~/components/pokemons/shared/pokemons-card/pokemons-card-selectable";
 import { PaginationButton } from "~/components/pokemons/shared/pagination/pagination-button";
+
 import useSelectedItems from "~/hooks/useSelectedItems";
 
 type Pokemons = any;
@@ -43,8 +45,13 @@ export function PokemonComparisons({ data }: Props) {
   const [hasNext, setNext] = useState(false);
   const [hasPrev, setPrev] = useState(false);
 
-  const { selectedItemsLen, isSelected, updateSelectedItem } =
-    useSelectedItems<PokemonDataList>();
+  const {
+    selectedItems,
+    selectedItemsLen,
+    isSelected,
+    updateSelectedItem,
+    clear,
+  } = useSelectedItems<PokemonDataList>();
 
   const fetchPokemons = useCallback(async () => {
     setLoading(true);
@@ -67,7 +74,12 @@ export function PokemonComparisons({ data }: Props) {
   }, [pagination, data.name]);
 
   const handleToggleDialog = (open: boolean) => {
-    open ? setEvent(Events.SELECT_ITEMS) : setEvent(undefined);
+    if (open) {
+      setEvent(Events.SELECT_ITEMS);
+    } else {
+      setEvent(undefined);
+      clear();
+    }
   };
 
   const handleToSelectItems = () => {
@@ -95,7 +107,7 @@ export function PokemonComparisons({ data }: Props) {
       </Button>
 
       <Dialog.Portal>
-        <Dialog.Content className="min-h-[600px] overflow-y-auto">
+        <Dialog.Content className="h-full overflow-y-auto">
           <Dialog.Title>{renderTitleByEvent(event)}</Dialog.Title>
 
           {isLoading && <Loading />}
@@ -110,6 +122,12 @@ export function PokemonComparisons({ data }: Props) {
               setPagination={setPagination}
               selectedItemsLen={selectedItemsLen}
               onUpdateSelectedItem={updateSelectedItem}
+            />
+          )}
+          {!isLoading && event === Events.PROCEED && (
+            <ComparisonItemsDialogContent
+              initial={data}
+              items={selectedItems}
             />
           )}
         </Dialog.Content>
@@ -173,7 +191,7 @@ function SelectItemsDialogContent({
   };
 
   return (
-    <ScrollArea type="always" style={{ height: 180 }}>
+    <div>
       <div className="grid grid-cols-1 pb-20 pt-10 sm:grid-cols-3 md:grid-cols-5">
         {pokemons.map((pokemon) => {
           return (
@@ -223,6 +241,55 @@ function SelectItemsDialogContent({
           </Button>
         </div>
       </div>
-    </ScrollArea>
+    </div>
+  );
+}
+
+type ComparisonItemsDialogContentProps = {
+  initial: PokemonDataGet;
+  items: PokemonDataList[];
+};
+
+function ComparisonItemsDialogContent({
+  items,
+  initial,
+}: ComparisonItemsDialogContentProps) {
+  return (
+    <div className="flex h-screen w-full flex-row gap-10 overflow-x-auto py-10">
+      {[initial, ...items].map((value) => {
+        return (
+          <div key={value.id} className="mr-5 min-w-[300px]">
+            <Image
+              width={150}
+              height={150}
+              className="mb-5 h-20 w-20"
+              alt={value.name}
+              src={value.thumbnailUrl || ""}
+            />
+
+            <div className="border-slate-muted mb-5 border-b pb-2">
+              <p className="text-foreground/60 mb-1 text-xs">Name:</p>
+              <PokemonsTitle name={value.name} />
+            </div>
+
+            <div className="border-slate-muted mb-5 border-b  pb-2">
+              <p className="text-foreground/60 mb-1 text-xs">Height:</p>
+            </div>
+
+            <div className="border-slate-muted mb-5 border-b  pb-2">
+              <p className="text-foreground/60 mb-1 text-xs">Weight:</p>
+            </div>
+
+            <div className="border-slate-muted mb-5 border-b  pb-2">
+              <p className="text-foreground/60 mb-1 text-xs">Abilities:</p>
+            </div>
+
+            <div className="border-slate-muted mb-5 border-b  pb-2">
+              <p className="text-foreground/60 mb-1 text-xs">Types:</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

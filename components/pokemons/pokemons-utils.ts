@@ -1,13 +1,13 @@
 import { Ability, NamedAPIResourceList, Pokemon } from "pokenode-ts";
 
 import { pokemonInstance } from "~/apis/client";
-import { parseOffsetLimitFromUrl } from "~/components/pokemons/pagination/pagination-utils";
+import { parseOffsetLimitFromUrl } from "~/components/pokemons/shared/pagination/pagination-utils";
 import type {
   PokemonDataList,
   PokemonDataGet,
   BaseParams,
   SortType,
-} from "~/components/pokemons/types";
+} from "~/components/pokemons/shared/types";
 
 export function pokemonsMapper(
   items: PokemonDataList[],
@@ -135,6 +135,7 @@ export async function getPokemon({
     description: pokemonAbilityData.effect_entries[0]?.effect || "",
     thumbnailUrl: pokemonData.sprites.front_default,
     coverUrl: pokemonData.sprites.other?.home.front_default || "",
+    stats: pokemonData.stats,
     types: pokemonData.types,
   };
 }

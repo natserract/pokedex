@@ -1,5 +1,5 @@
 import Button from "~/components/base/button";
-import type { PokemonDataList } from "~/components/pokemons/types";
+import type { PokemonDataList } from "~/components/pokemons/shared/types";
 
 import { cn } from "~/utils/cn";
 

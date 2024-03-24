@@ -1,5 +1,5 @@
-import { PokemonsCard } from "~/components/pokemons/pokemons-card";
-import { PaginationButton } from "~/components/pokemons/pagination/pagination-button";
+import { PokemonsCard } from "~/components/pokemons/shared/pokemons-card";
+import { PaginationButton } from "~/components/pokemons/shared/pagination/pagination-button";
 import {
   listPokemons,
   type ListPokemonsParams,

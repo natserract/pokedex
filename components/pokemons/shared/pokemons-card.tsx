@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { PokemonsTypes } from "~/components/pokemons/pokemons-types";
-import type { PokemonDataList } from "~/components/pokemons/types";
+import { PokemonsTypes } from "~/components/pokemons/shared/pokemons-types";
+import type { PokemonDataList } from "~/components/pokemons/shared/types";
 
 type PokemonsCardProps = PokemonDataList;
 

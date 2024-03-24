@@ -1,4 +1,4 @@
-import type { PokemonDataGet } from "~/components/pokemons/types";
+import type { PokemonDataGet } from "~/components/pokemons/shared/types";
 
 type Props = {
   data: PokemonDataGet;

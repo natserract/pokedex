@@ -1,4 +1,9 @@
-import { PokemonType, Pokemon } from "pokenode-ts";
+import type { PokemonType, Pokemon, PokemonStat } from "pokenode-ts";
+
+export interface BaseParams {
+  offset: number;
+  limit: number;
+}
 
 export interface PokemonDataList {
   id: number;
@@ -13,11 +18,7 @@ export interface PokemonDataGet
   abilityName: string;
   coverUrl: string | null;
   description: string;
-}
-
-export interface BaseParams {
-  offset: number;
-  limit: number;
+  stats: PokemonStat[];
 }
 
 export type SortType = "asc" | "desc";

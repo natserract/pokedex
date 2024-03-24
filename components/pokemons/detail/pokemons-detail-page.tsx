@@ -4,9 +4,9 @@ import {
   GetPokemonParams,
   getPokemon,
 } from "~/components/pokemons/pokemons-utils";
-import type { PokemonDataGet } from "~/components/pokemons/types";
-import { PokemonsTypes } from "~/components/pokemons/pokemons-types";
-import { PokemonsAbility } from "~/components/pokemons/detail/pokemons-ability";
+import type { PokemonDataGet } from "~/components/pokemons/shared/types";
+import { PokemonsTypes } from "~/components/pokemons/shared/pokemons-types";
+import { PokemonsAbility } from "~/components/pokemons/shared/pokemons-ability";
 
 import { toCamelCase } from "~/utils/string";
 

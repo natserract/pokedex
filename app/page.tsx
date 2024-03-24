@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Layout } from "~/components/base/layout";
 import { Loading } from "~/components/base/loading";
 import { Pokemons } from "~/components/pokemons/pokemons-page";
-import type { SortType } from "~/components/pokemons/types";
+import type { SortType } from "~/components/pokemons/shared/types";
 
 export default async function Page({
   searchParams,

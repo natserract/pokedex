@@ -1,17 +1,16 @@
-import { NamedAPIResourceList, Pokemon, PokemonType } from "pokenode-ts";
+import { Ability, NamedAPIResourceList, Pokemon } from "pokenode-ts";
 
 import { pokemonInstance } from "~/apis/client";
 import { parseOffsetLimitFromUrl } from "~/components/pokemons/pagination/pagination-utils";
-
-export interface PokemonData {
-  id: number;
-  name: string;
-  imgUrl: string | null;
-  types: PokemonType[];
-}
+import type {
+  PokemonDataList,
+  PokemonDataGet,
+  BaseParams,
+  SortType,
+} from "~/components/pokemons/types";
 
 export function pokemonsMapper(
-  items: PokemonData[],
+  items: PokemonDataList[],
   data: NamedAPIResourceList,
 ) {
   return {
@@ -27,18 +26,13 @@ export function pokemonsMapper(
   };
 }
 
-export function pokemonDataMapper(data: Pokemon) {
+export function pokemonDataMapper(data: Pokemon): PokemonDataList {
   return {
     id: data.id,
     name: data.name,
-    imgUrl: data.sprites.front_default,
+    thumbnailUrl: data.sprites.front_default,
     types: data.types,
   };
-}
-
-interface BaseParams {
-  offset: number;
-  limit: number;
 }
 
 export interface ListPokemonsParams extends BaseParams {
@@ -59,14 +53,14 @@ export async function listPokemons(params: ListPokemonsParams) {
   }
 
   if (params.sort) {
-    if (params.sort.name) {
+    if (params.sort.byName) {
       pokemons = await sortPokemonsByName(pokemons, {
-        name: params.sort.name,
+        byName: params.sort.byName,
       });
     }
   }
 
-  const pokemonDataList = await Promise.all<PokemonData>(
+  const pokemonDataList = await Promise.all<PokemonDataList>(
     pokemons.results.map(async (pokemon) => {
       const pokemonData = await pokemonInstance.getPokemonByName(pokemon.name);
       return pokemonDataMapper(pokemonData);
@@ -76,7 +70,7 @@ export async function listPokemons(params: ListPokemonsParams) {
   return pokemonsMapper(pokemonDataList, pokemons);
 }
 
-interface FilterParams {
+export interface FilterParams {
   name: string;
 }
 
@@ -94,20 +88,18 @@ export async function filterPokemons(
   };
 }
 
-export type SortType = "asc" | "desc";
-
 interface SortParams {
-  name: SortType | undefined;
+  byName: SortType | undefined;
 }
 
-interface SortByNameParams extends SortParams {}
+export interface SortByNameParams extends SortParams {}
 
 export async function sortPokemonsByName(
   pokemons: NamedAPIResourceList,
   params: SortByNameParams,
 ): Promise<NamedAPIResourceList> {
   const sortedPokemons = pokemons.results.sort((a, b) =>
-    params.name == "asc"
+    params.byName == "asc"
       ? a.name.localeCompare(b.name)
       : b.name.localeCompare(a.name),
   );
@@ -115,5 +107,34 @@ export async function sortPokemonsByName(
   return {
     ...pokemons,
     results: sortedPokemons,
+  };
+}
+
+export interface GetPokemonParams {
+  name: string;
+}
+
+export async function getPokemon({
+  name,
+}: GetPokemonParams): Promise<PokemonDataGet> {
+  const pokemonData = await pokemonInstance.getPokemonByName(name);
+  const pokemonAbilityData = await pokemonInstance.getAbilityById(
+    pokemonData.id,
+  );
+
+  const abilityNameEn = pokemonAbilityData.names.find(
+    ({ language }) => language.name === "en",
+  );
+
+  return {
+    id: pokemonData.id,
+    name: pokemonData.name,
+    height: pokemonData.height,
+    weight: pokemonData.weight,
+    abilityName: abilityNameEn?.name || "",
+    description: pokemonAbilityData.effect_entries[0]?.effect || "",
+    thumbnailUrl: pokemonData.sprites.front_default,
+    coverUrl: pokemonData.sprites.other?.home.front_default || "",
+    types: pokemonData.types,
   };
 }

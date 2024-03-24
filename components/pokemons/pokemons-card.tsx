@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import Button from "~/components/base/button";
-import type { PokemonData } from "~/components/pokemons/pokemons-utils";
+import { PokemonsTypes } from "~/components/pokemons/pokemons-types";
+import type { PokemonDataList } from "~/components/pokemons/types";
 
-type PokemonsCardProps = PokemonData;
+type PokemonsCardProps = PokemonDataList;
 
-export function PokemonsCard({ name, types, imgUrl }: PokemonsCardProps) {
+export function PokemonsCard({ name, types, thumbnailUrl }: PokemonsCardProps) {
   const pokemonLink = `/pokemons/${name.toLowerCase()}`;
 
   return (
@@ -18,31 +18,17 @@ export function PokemonsCard({ name, types, imgUrl }: PokemonsCardProps) {
             height={150}
             className="h-20 w-20"
             alt={name}
-            src={imgUrl || ""}
+            src={thumbnailUrl || ""}
           />
 
           <PokemonsTitle name={name} />
-          <PokemonsTypes types={types} />
+          <PokemonsTypes classNames="mt-4" types={types} />
         </div>
       </Link>
     </div>
   );
 }
 
-export function PokemonsTitle({ name }: Pick<PokemonData, "name">) {
+export function PokemonsTitle({ name }: Pick<PokemonDataList, "name">) {
   return <h3>{name}</h3>;
-}
-
-export function PokemonsTypes({ types }: Pick<PokemonData, "types">) {
-  return (
-    <div className="mt-4 flex flex-row gap-3">
-      {types.map((data) => {
-        return (
-          <Button key={data.slot} className="text-xs">
-            {data.type.name}
-          </Button>
-        );
-      })}
-    </div>
-  );
 }

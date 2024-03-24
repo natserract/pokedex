@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Layout } from "~/components/base/layout";
 import { Loading } from "~/components/base/loading";
 import { Pokemons } from "~/components/pokemons/pokemons-page";
-import type { SortType } from "~/components/pokemons/pokemons-utils";
+import type { SortType } from "~/components/pokemons/types";
 
 export default async function Page({
   searchParams,
@@ -24,7 +24,7 @@ export default async function Page({
           offset={offset}
           limit={limit}
           sort={{
-            name: searchParams.sortByName,
+            byName: searchParams.sortByName,
           }}
         />
       </Suspense>

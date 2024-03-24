@@ -1,4 +1,4 @@
-import { PokemonsCard } from "~/components/pokemons/shared/pokemons-card";
+import { PokemonsCard } from "~/components/pokemons/shared/pokemons-card/pokemons-card";
 import { PaginationButton } from "~/components/pokemons/shared/pagination/pagination-button";
 import {
   listPokemons,

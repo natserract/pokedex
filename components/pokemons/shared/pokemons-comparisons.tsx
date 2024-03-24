@@ -10,8 +10,9 @@ import type {
   PokemonDataList,
 } from "~/components/pokemons/shared/types";
 import { listPokemons as listPokemonsCall } from "~/components/pokemons/pokemons-utils";
-import { PokemonsCardSelectable } from "~/components/pokemons/shared/pokemons-card-selectable";
+import { PokemonsCardSelectable } from "~/components/pokemons/shared/pokemons-card/pokemons-card-selectable";
 import { PaginationButton } from "~/components/pokemons/shared/pagination/pagination-button";
+import useSelectedItems from "~/hooks/useSelectedItems";
 
 type Pokemons = any;
 
@@ -33,9 +34,8 @@ export function PokemonComparisons({ data }: Props) {
   const [hasNext, setNext] = useState(false);
   const [hasPrev, setPrev] = useState(false);
 
-  const [selectedItems, setSelectedItems] = useState<
-    Map<string, PokemonDataList>
-  >(new Map());
+  const { selectedItemsLen, isSelected, updateSelectedItem } =
+    useSelectedItems<PokemonDataList>();
 
   const fetchPokemons = useCallback(async () => {
     setLoading(true);
@@ -55,18 +55,8 @@ export function PokemonComparisons({ data }: Props) {
   };
 
   const handleSelect = (data: PokemonDataList) => {
-    const updatedItems = new Map(selectedItems);
-
-    if (updatedItems.has(data.name)) {
-      updatedItems.delete(data.name);
-    } else {
-      updatedItems.set(data.name, data);
-    }
-
-    setSelectedItems(updatedItems);
+    updateSelectedItem(data, data.name);
   };
-
-  console.log("selectedItems", [...selectedItems.values()]);
 
   const handleNextPagination = () => {
     setPagination((state) => ({
@@ -113,8 +103,8 @@ export function PokemonComparisons({ data }: Props) {
                         thumbnailUrl: pokemon.thumbnailUrl || "",
                       }}
                       onSelect={handleSelect}
-                      isSelected={selectedItems.has(pokemon.name)}
-                      maxSelected={selectedItems.size == 3} // Max selected items 3
+                      isSelected={isSelected(pokemon.name)}
+                      maxSelected={selectedItemsLen === 3} // Max selected items 3
                     />
                   );
                 })}
@@ -144,10 +134,10 @@ export function PokemonComparisons({ data }: Props) {
                 <div className="flex flex-row py-10">
                   <Button
                     variant="primary"
-                    disabled={!selectedItems.size}
+                    disabled={!selectedItemsLen}
                     className="text-xs"
                   >
-                    Proceed To Compares ({selectedItems.size})
+                    Proceed To Compares ({selectedItemsLen})
                   </Button>
                 </div>
               </div>

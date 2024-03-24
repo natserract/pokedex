@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-import { PokemonsTypes } from "~/components/pokemons/shared/pokemons-types";
-import { PokemonsTitle } from "~/components/pokemons/shared/pokemons-card";
 import type { PokemonDataList } from "~/components/pokemons/shared/types";
+import { PokemonsTypes } from "~/components/pokemons/shared/pokemons-types";
+import { PokemonsTitle } from "~/components/pokemons/shared/pokemons-card/pokemons-card";
 
 import { cn } from "~/utils/cn";
 

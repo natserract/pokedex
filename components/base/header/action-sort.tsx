@@ -9,7 +9,10 @@ import { SortType } from "~/components/pokemons/pokemons-utils";
 import { SearchParamsKeys } from "~/constants/searchParamsKeys";
 import useSearchParamsPersistence from "~/hooks/useSearchParamsPersistence";
 
-export function SortAction() {
+export interface Props {
+  disabled?: boolean;
+}
+export function SortAction({ disabled }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { getWithUpdateSearchParams } = useSearchParamsPersistence();
@@ -34,13 +37,17 @@ export function SortAction() {
 
   return (
     <Dropdown.Root>
-      <Dropdown.Trigger asChild>
+      <Dropdown.Trigger asChild disabled={disabled}>
         <button
           type="button"
           aria-label="Urutkan pokemon"
           className={cn(
             "text-foreground/50 hover:text-foreground transition-all duration-200",
+            {
+              "text-foreground/20 hover:text-foreground/20": disabled,
+            },
           )}
+          disabled={disabled}
         >
           <ArrowUpDown size={20} className="shrink-0 " />
         </button>

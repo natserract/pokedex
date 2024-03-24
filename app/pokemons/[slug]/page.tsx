@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { Loading } from "~/components/base/loading";
-import { PokemonsDetail } from "~/components/pokemons/detail/pokemons-detail-page";
+import { PokemonsDetail } from "~/components/pokemons/pokemons-detail-page";
 
 export default function Page({ params }: { params: { slug: string } }) {
   return (

@@ -1,4 +1,4 @@
-import { Ability, NamedAPIResourceList, Pokemon } from "pokenode-ts";
+import { NamedAPIResourceList, Pokemon } from "pokenode-ts";
 
 import { pokemonInstance } from "~/apis/client";
 import { parseOffsetLimitFromUrl } from "~/components/pokemons/shared/pagination/pagination-utils";

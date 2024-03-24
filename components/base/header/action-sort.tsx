@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { cn } from "~/utils/cn";
 import * as Dropdown from "~/components/base/dropdown";
-import { SortType } from "~/components/pokemons/pokemons-utils";
+import { SortType } from "~/components/pokemons/shared/types";
 import { SearchParamsKeys } from "~/constants/searchParamsKeys";
 import useSearchParamsPersistence from "~/hooks/useSearchParamsPersistence";
 

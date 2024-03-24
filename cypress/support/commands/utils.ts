@@ -3,7 +3,7 @@ import { Cypress, cy } from "local-cypress";
 declare global {
   namespace Cypress {
     interface Chainable {
-      getByTestId(...testids): Chainable;
+      getByTestId(...testids: unknown[]): Chainable;
     }
   }
 }

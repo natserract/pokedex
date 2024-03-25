@@ -56,6 +56,7 @@ export function PaginationButton({ offset, limit, type, onClick }: Props) {
       variant="secondary"
       className="min-w-[100px] text-xs"
       onClick={handleClick}
+      data-testid="pagination-button"
     >
       {type == "next" ? "Next" : "Previous"}
     </Button>

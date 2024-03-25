@@ -1,26 +1,28 @@
+# Pokedex
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Running
 
-Run the development server:
+**Run the development server**
 
 ```bash
 yarn dev
 ```
 
-Launches the cypress e2e testing suite
+**Launches the cypress e2e testing suite**
 
 ```bash
 yarn e2e:headless
 ```
 
-Launches the test runner in the interactive watch mode
+**Launches the test runner in the interactive watch mode**
 
 ```bash
 yarn e2e
 ```
 
-Builds the app for production to the build folder.
+Builds the app for production to the build folder\*\*
 
 ```bash
 yarn build

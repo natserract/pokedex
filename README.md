@@ -22,7 +22,7 @@ yarn e2e:headless
 yarn e2e
 ```
 
-Builds the app for production to the build folder\*\*
+**Builds the app for production to the build folder**
 
 ```bash
 yarn build

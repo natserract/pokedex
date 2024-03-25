@@ -5,7 +5,9 @@ describe("pagination", () => {
     cy.visit("/");
 
     cy.getByTestId("pagination-button").should("contain", "Next");
-    cy.getByTestId("pagination-button").should("contain", "Next").click();
+    cy.getByTestId("pagination-button")
+      .should("contain", "Next")
+      .click({ multiple: true });
     cy.wait(1000);
     cy.getByTestId("pagination-button").should("contain", "Previous");
   });

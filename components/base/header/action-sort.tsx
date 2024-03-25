@@ -40,25 +40,27 @@ export function SortAction({ disabled }: Props) {
       <Dropdown.Trigger asChild disabled={disabled}>
         <button
           type="button"
-          aria-label="Urutkan pokemon"
+          aria-label="Sort pokemon"
           className={cn(
             "text-foreground/50 hover:text-foreground transition-all duration-200",
             {
               "text-foreground/20 hover:text-foreground/20": disabled,
             },
           )}
+          data-testid="sort-action-button"
           disabled={disabled}
         >
           <ArrowUpDown size={20} className="shrink-0 " />
         </button>
       </Dropdown.Trigger>
 
-      <Dropdown.Content>
+      <Dropdown.Content data-testid="sort-action-content">
         <Dropdown.Item
           className="flex cursor-pointer items-center gap-2"
           onClick={() => handleSortByName()}
+          data-testid="sort-action-item"
         >
-          Urut nama {sortType && <i className="text-[9px]">({sortType})</i>}
+          Sort by name {sortType && <i className="text-[9px]">({sortType})</i>}
         </Dropdown.Item>
       </Dropdown.Content>
     </Dropdown.Root>

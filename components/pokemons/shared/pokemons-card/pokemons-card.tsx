@@ -13,7 +13,10 @@ export function PokemonsCard({ data }: PokemonsCardProps) {
   const pokemonLink = `/pokemons/${name.toLowerCase()}`;
 
   return (
-    <div className="relative h-full w-full hover:bg-[#232323]">
+    <div
+      className="relative h-full w-full hover:bg-[#232323]"
+      data-testid="pokemons-card"
+    >
       <Link href={pokemonLink}>
         <div className="border-slate-muted card relative flex h-full w-full flex-col items-center border py-10">
           <Image
@@ -24,7 +27,7 @@ export function PokemonsCard({ data }: PokemonsCardProps) {
             src={thumbnailUrl || ""}
           />
 
-          <PokemonsTitle name={name} />
+          <PokemonsTitle name={name} data-testid="pokemons-card-title" />
           <PokemonsTypes classNames="mt-4" types={types} />
         </div>
       </Link>

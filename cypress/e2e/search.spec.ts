@@ -1,11 +1,13 @@
-import { cy, describe, it } from "local-cypress";
+import { cy, describe, beforeEach, it } from "local-cypress";
 
 describe("search", () => {
   const searchQuery = "bulbasaur";
 
-  it("should enter a search query into the input field", () => {
+  beforeEach(() => {
     cy.visit("/search");
+  });
 
+  it("should enter a search query into the input field", () => {
     cy.getByTestId("search-form").within(() => {
       cy.getByTestId("search-input").type(searchQuery);
       cy.getByTestId("search-input").should("have.value", searchQuery);
@@ -13,8 +15,6 @@ describe("search", () => {
   });
 
   it("should submit the search form with the entered query", () => {
-    cy.visit("/search");
-
     cy.getByTestId("search-form").within(() => {
       cy.getByTestId("search-input").type(searchQuery);
 
@@ -23,7 +23,7 @@ describe("search", () => {
     });
 
     cy.wait(200);
-    cy.url().should("include", "?query=bulbasaur");
+    cy.url().should("include", `?query=${searchQuery}`);
     cy.getByTestId("search-submit").should("contain", "Search");
   });
 });

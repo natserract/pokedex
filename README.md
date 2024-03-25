@@ -1,17 +1,29 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Running
 
-First, run the development server:
+Run the development server:
 
 ```bash
-npm run dev
-# or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+
+Launches the cypress e2e testing suite
+
+```bash
+yarn e2e:headless
+```
+
+Launches the test runner in the interactive watch mode
+
+```bash
+yarn e2e
+```
+
+Builds the app for production to the build folder.
+
+```bash
+yarn build
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

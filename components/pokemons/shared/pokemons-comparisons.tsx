@@ -192,7 +192,7 @@ type SelectItemsContentProps = {
   onProceed: () => void;
 };
 
-function SelectItemsContent({
+export function SelectItemsContent({
   pokemons,
   hasNext,
   hasPrev,

@@ -6,7 +6,6 @@ import {
   setupCache,
 } from "axios-cache-interceptor";
 
-import { env } from "~/configs/env";
 import { ENDPOINTS } from "~/constants/endpoints";
 import type { NamedAPIResourceList } from "~/types/models/resource";
 
@@ -19,7 +18,7 @@ export class BaseClient {
   constructor() {
     this.api = setupCache(
       axios.create({
-        baseURL: env.API_URL,
+        baseURL: process.env.NEXT_PUBLIC_API_URL,
         headers: {
           "Content-Type": "application/json",
         },

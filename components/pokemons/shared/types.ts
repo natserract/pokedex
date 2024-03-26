@@ -1,4 +1,4 @@
-import type { PokemonType, Pokemon, PokemonStat } from "pokenode-ts";
+import type { PokemonStat, Pokemon, PokemonType } from "~/types/models";
 
 export interface BaseParams {
   offset: number;

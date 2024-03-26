@@ -1,9 +1,9 @@
 "use client";
 import { useMemo } from "react";
-import type { PokemonStat } from "pokenode-ts";
 
 import { cn } from "~/utils/cn";
 import { toCamelCase } from "~/utils/string";
+import type { PokemonStat } from "~/types/models";
 
 type Props = {
   data: PokemonStat[];

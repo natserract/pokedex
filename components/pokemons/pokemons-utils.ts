@@ -1,6 +1,5 @@
-import { NamedAPIResourceList, Pokemon } from "pokenode-ts";
+import pokemonClient from "~/apis/pokemon";
 
-import { pokemonInstance } from "~/apis/client";
 import { parseOffsetLimitFromUrl } from "~/components/pokemons/shared/pagination/pagination-utils";
 import type {
   PokemonDataList,
@@ -8,6 +7,8 @@ import type {
   BaseParams,
   SortType,
 } from "~/components/pokemons/shared/types";
+
+import type { NamedAPIResourceList, Pokemon } from "~/types/models";
 
 export function pokemonsMapper(
   items: PokemonDataList[],
@@ -43,10 +44,7 @@ export interface ListPokemonsParams extends BaseParams {
 }
 
 export async function listPokemons(params: ListPokemonsParams) {
-  let pokemons = await pokemonInstance.listPokemons(
-    params.offset,
-    params.limit,
-  );
+  let pokemons = await pokemonClient.listPokemons(params.offset, params.limit);
 
   if (params.query) {
     pokemons = await filterPokemons(pokemons, {
@@ -64,7 +62,7 @@ export async function listPokemons(params: ListPokemonsParams) {
 
   const pokemonDataList = await Promise.all<PokemonDataList>(
     pokemons.results.map(async (pokemon) => {
-      const pokemonData = await pokemonInstance.getPokemonByName(pokemon.name);
+      const pokemonData = await pokemonClient.getPokemonByName(pokemon.name);
       return pokemonDataMapper(pokemonData);
     }),
   );
@@ -119,12 +117,10 @@ export interface GetPokemonParams {
 export async function getPokemon({
   name,
 }: GetPokemonParams): Promise<PokemonDataGet> {
-  const pokemonData = await pokemonInstance.getPokemonByName(name);
-  const pokemonAbilityData = await pokemonInstance.getAbilityById(
-    pokemonData.id,
-  );
+  const pokemonData = await pokemonClient.getPokemonByName(name);
+  const pokemonAbilityData = await pokemonClient.getAbilityById(pokemonData.id);
 
-  const abilityNameEn = pokemonAbilityData.names.find(
+  const abilityName = pokemonAbilityData.names.find(
     ({ language }) => language.name === "en",
   );
 
@@ -133,7 +129,7 @@ export async function getPokemon({
     name: pokemonData.name,
     height: pokemonData.height,
     weight: pokemonData.weight,
-    abilityName: abilityNameEn?.name || "",
+    abilityName: abilityName?.name || "",
     description: pokemonAbilityData.effect_entries[0]?.effect || "",
     thumbnailUrl: pokemonData.sprites.front_default,
     coverUrl: pokemonData.sprites.other?.home.front_default || "",
